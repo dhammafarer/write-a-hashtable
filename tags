@@ -67,9 +67,19 @@ ht_insert	src/hash_table.c	/^void ht_insert(ht_hash_table *ht, const char *key, 
 ht_item	src/hash_table.h	/^} ht_item;$/;"	t	typeref:struct:__anon714f5c7d0108
 ht_new	src/hash_table.c	/^ht_hash_table *ht_new() {$/;"	f	typeref:typename:ht_hash_table *
 ht_new_item	src/hash_table.c	/^static ht_item *ht_new_item(const char *k, const char *v) {$/;"	f	typeref:typename:ht_item *	file:
+ht_new_sized	src/hash_table.c	/^static ht_hash_table *ht_new_sized(const int size_index) {$/;"	f	typeref:typename:ht_hash_table *	file:
+ht_resize	src/hash_table.c	/^static void ht_resize(ht_hash_table *ht, const int direction) {$/;"	f	typeref:typename:void	file:
 ht_search	src/hash_table.c	/^char *ht_search(ht_hash_table *ht, const char *key) {$/;"	f	typeref:typename:char *
+is_prime	src/prime.c	/^int is_prime(const int x) {$/;"	f	typeref:typename:int
 items	src/hash_table.h	/^    ht_item **items;$/;"	m	struct:__anon714f5c7d0208	typeref:typename:ht_item **
 key	src/hash_table.h	/^    char *key;$/;"	m	struct:__anon714f5c7d0108	typeref:typename:char *
 main	src/main.c	/^int main() {$/;"	f	typeref:typename:int
+next_prime	src/prime.c	/^int next_prime(int x) {$/;"	f	typeref:typename:int
 size	src/hash_table.h	/^    int size;$/;"	m	struct:__anon714f5c7d0208	typeref:typename:int
+size_index	src/hash_table.h	/^    int size_index;$/;"	m	struct:__anon714f5c7d0208	typeref:typename:int
 value	src/hash_table.h	/^    char *value;$/;"	m	struct:__anon714f5c7d0108	typeref:typename:char *
+xcalloc	src/xmalloc.c	/^void *xcalloc(size_t nmemb, size_t size) {$/;"	f	typeref:typename:void *
+xmalloc	src/xmalloc.c	/^void *xmalloc(size_t size) {$/;"	f	typeref:typename:void *
+xmalloc_fatal	src/xmalloc.c	/^static void *xmalloc_fatal(size_t size) {$/;"	f	typeref:typename:void *	file:
+xrealloc	src/xmalloc.c	/^void *xrealloc(void *ptr, size_t size) {$/;"	f	typeref:typename:void *
+xstrdup	src/xmalloc.c	/^char *xstrdup (const char *s) {$/;"	f	typeref:typename:char *

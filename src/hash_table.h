@@ -4,6 +4,7 @@ typedef struct {
 } ht_item;
 
 typedef struct {
+    int size_index;
     int size;
     int count;
     ht_item **items;

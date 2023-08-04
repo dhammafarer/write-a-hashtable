@@ -1,16 +1,22 @@
 #include <math.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "hash_table.h"
+#include "xmalloc.h"
+#include "prime.h"
 
 #define HT_PRIME_1 151
-#define HT_PRIME_2 151
+#define HT_PRIME_2 163
 
 static ht_item HT_DELETED_ITEM = {NULL, NULL};
 
+/*
+ * Initializes a new item containing k: v
+ */
 static ht_item *ht_new_item(const char *k, const char *v) {
-    ht_item *i = malloc(sizeof(ht_item));
+    ht_item *i = xmalloc(sizeof(ht_item));
 
     i->key = strdup(k);
     i->value = strdup(v);
@@ -18,20 +24,26 @@ static ht_item *ht_new_item(const char *k, const char *v) {
     return i;
 }
 
-ht_hash_table *ht_new() {
-    ht_hash_table *ht = malloc(sizeof(ht_hash_table));
-
-    ht->size = 53;
-    ht->count = 0;
-    ht->items = calloc((size_t)ht->size, sizeof(ht_item *));
-
-    return ht;
-}
-
 static void ht_del_item(ht_item *i) {
     free(i->key);
     free(i->value);
     free(i);
+}
+
+static ht_hash_table *ht_new_sized(const int size_index) {
+    ht_hash_table *ht = xmalloc(sizeof(ht_hash_table));
+    ht->size_index = size_index;
+
+    const int base_size = 50 << ht->size_index;
+    ht->size = next_prime(base_size);
+
+    ht->count = 0;
+    ht->items = xcalloc((size_t)ht->size, sizeof(ht_item*));
+    return ht;
+}
+
+ht_hash_table *ht_new() {
+    return ht_new_sized(0);
 }
 
 void ht_del_hash_table(ht_hash_table *ht) {
@@ -43,6 +55,43 @@ void ht_del_hash_table(ht_hash_table *ht) {
     }
     free(ht->items);
     free(ht);
+}
+
+/*
+ * Resize ht
+ */
+static void ht_resize(ht_hash_table *ht, const int direction) {
+    const int new_size_index = ht->size_index + direction;
+
+    if (new_size_index < 0) {
+        // don't resize down the smallest hashtable
+        return;
+    }
+    // Create a temporary new has table to insert items into
+    ht_hash_table *new_ht = ht_new_sized(new_size_index);
+
+    //Iterate through existing hash table, add all items to new
+    for (int i = 0; i < ht->size; i++) {
+        ht_item *item = ht->items[i];
+        if (item != NULL && item != &HT_DELETED_ITEM) {
+            ht_insert(new_ht, item->key, item->value);
+        }
+    }
+
+    // Pass new_ht and ht's properties. Delete new_ht
+    ht->size_index = new_ht->size_index;
+    ht->count = new_ht->count;
+
+    // To delete new_ht, we git it ht's size and items
+    const int tmp_size = ht->size;
+    ht->size = new_ht->size;
+    new_ht->size = tmp_size;
+
+    ht_item **tmp_items = ht->items;
+    ht->items = new_ht->items;
+    new_ht->items = tmp_items;
+
+    ht_del_hash_table(new_ht);
 }
 
 static int ht_hash(const char *s, const int a, const int m) {
